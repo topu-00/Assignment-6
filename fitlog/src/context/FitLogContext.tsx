@@ -6,9 +6,9 @@ import { Workout } from "@/types/workout";
 interface FitLogContextType {
     plan: Workout[];
     saved: Workout[];
-    addToPlan: (workout: Workout) => void;
+    addToPlan: (workout: Workout) => boolean;
     removeFromPlan: (id: number) => void;
-    saveWorkout: (workout: Workout) => void;
+    saveWorkout: (workout: Workout) => boolean;
     removeSaved: (id: number) => void;
 }
 
@@ -23,29 +23,75 @@ export const FitLogProvider = ({
     const [saved, setSaved] = useState<Workout[]>([]);
 
     const addToPlan = (workout: Workout) => {
-        if (plan.length >= 5) return;
-
-        const alreadyAdded = plan.some((item) => item.id === workout.id);
-
-        if (!alreadyAdded) {
-            setPlan([...plan, workout]);
+        if (plan.length >= 5) {
+            return false;
         }
+
+        const alreadyAdded = plan.some(
+            (item) => item.id === workout.id
+        );
+
+        if (alreadyAdded) {
+            return false;
+        }
+
+        const newPlan = [...plan, workout];
+
+        setPlan(newPlan);
+
+        localStorage.setItem(
+            "fitlog-plan",
+            JSON.stringify(newPlan)
+        );
+
+        return true;
     };
 
     const removeFromPlan = (id: number) => {
-        setPlan(plan.filter((item) => item.id !== id));
+        const newPlan = plan.filter(
+            (item) => item.id !== id
+        );
+
+        setPlan(newPlan);
+
+        localStorage.setItem(
+            "fitlog-plan",
+            JSON.stringify(newPlan)
+        );
     };
 
     const saveWorkout = (workout: Workout) => {
-        const alreadySaved = saved.some((item) => item.id === workout.id);
+        const alreadySaved = saved.some(
+            (item) => item.id === workout.id
+        );
 
-        if (!alreadySaved) {
-            setSaved([...saved, workout]);
+        if (alreadySaved) {
+            return false;
         }
+
+        const newSaved = [...saved, workout];
+
+        setSaved(newSaved);
+
+        localStorage.setItem(
+            "fitlog-saved",
+            JSON.stringify(newSaved)
+        );
+
+        return true;
     };
 
     const removeSaved = (id: number) => {
-        setSaved(saved.filter((item) => item.id !== id));
+        const newSaved = saved.filter(
+            (item) => item.id !== id
+        );
+
+        setSaved(newSaved);
+
+        localStorage.setItem(
+            "fitlog-saved",
+            JSON.stringify(newSaved)
+        );
     };
 
     return (
@@ -68,7 +114,9 @@ export const useFitLog = () => {
     const context = useContext(FitLogContext);
 
     if (!context) {
-        throw new Error("useFitLog must be used inside FitLogProvider");
+        throw new Error(
+            "useFitLog must be used inside FitLogProvider"
+        );
     }
 
     return context;
