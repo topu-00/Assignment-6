@@ -180,9 +180,7 @@ export default function MyPlan() {
                                     </option>
                                 </select>
 
-                                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#8e95a5]">
-                                    ⌄
-                                </span>
+                                <span className="pointer-events-none absolute right-3 top-1/2 h-2 w-2 -translate-y-1/2 rotate-45 border-b-2 border-r-2 border-[#8e95a5]" />
                             </div>
                         </div>
 
